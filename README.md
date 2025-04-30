@@ -28,6 +28,7 @@ button.Parent = screenGui
 
 -- Variáveis
 local noclipActive = false
+local humanoid = nil
 
 -- Função de toggle
 local function toggleNoclip()
@@ -37,7 +38,7 @@ local function toggleNoclip()
 
 	-- Troca o estado do Humanoid pra evitar travamentos
 	local character = getCharacter()
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	humanoid = character:FindFirstChildOfClass("Humanoid")
 	if humanoid then
 		if noclipActive then
 			humanoid:ChangeState(Enum.HumanoidStateType.Physics)
@@ -54,12 +55,21 @@ button.MouseButton1Click:Connect(toggleNoclip)
 RunService.RenderStepped:Connect(function()
 	if noclipActive then
 		local character = getCharacter()
-		for _, part in ipairs(character:GetDescendants()) do
-			if part:IsA("BasePart") then
-				-- Deixa os "pés" com colisão pra não cair
-				if part.Name ~= "LeftFoot" and part.Name ~= "RightFoot" and part.Name ~= "LowerTorso" then
-					part.CanCollide = false
+		if humanoid and character then
+			-- Garante que as partes do personagem ficam sem colisão, mas com exceção do pé
+			for _, part in ipairs(character:GetDescendants()) do
+				if part:IsA("BasePart") then
+					-- Deixa os "pés" com colisão pra não cair
+					if part.Name ~= "LeftFoot" and part.Name ~= "RightFoot" and part.Name ~= "LowerTorso" then
+						part.CanCollide = false
+					end
 				end
+			end
+
+			-- Garante que o personagem se move corretamente durante o noclip
+			if humanoid.MoveDirection.Magnitude > 0 then
+				-- Permite o movimento
+				humanoid:Move(Vector3.new(0, 0, 0))  -- Aqui, mantém a posição do personagem
 			end
 		end
 	end
