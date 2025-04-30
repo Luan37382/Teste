@@ -56,7 +56,10 @@ RunService.RenderStepped:Connect(function()
 		local character = getCharacter()
 		for _, part in ipairs(character:GetDescendants()) do
 			if part:IsA("BasePart") then
-				part.CanCollide = false
+				-- Deixa os "pés" com colisão pra não cair
+				if part.Name ~= "LeftFoot" and part.Name ~= "RightFoot" and part.Name ~= "LowerTorso" then
+					part.CanCollide = false
+				end
 			end
 		end
 	end
